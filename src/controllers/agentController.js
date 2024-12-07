@@ -12,10 +12,6 @@ const agentController = {
     }
     try {
 
-        // const adminExists = await Agent.findagentByEmailOrPhone(email, phone);
-        // if (adminExists) {
-        //     return res.status(409).json({ status: false, message: 'Email or phone already exists' });
-        // }
 
         const emailexits = await Agent.findAgentByEmail(email);
         if (emailexits) {

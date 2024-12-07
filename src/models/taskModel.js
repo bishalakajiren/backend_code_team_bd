@@ -93,6 +93,19 @@ getTaskbyName : async (taskName) => {
     const [rows] = await db.query('DELETE FROM tasks WHERE id = ?', [id]);
     return rows.affectedRows > 0;
   },
+  updateTaskStatus: async (id, status) => {
+    await db.query(
+      `UPDATE tasks SET status = ? WHERE id = ?`,
+      [status, id]
+    );
+  },
+  updateTaskPriority: async (id, status) => {
+    await db.query(
+      `UPDATE tasks SET priority = ? WHERE id = ?`,
+      [status, id]
+    );
+  },
+  
 };
 
 module.exports = TaskModel;

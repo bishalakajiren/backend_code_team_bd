@@ -28,19 +28,32 @@ const ClientController = {
 
   createclient: async (req, res) => {
     try {
-      const { clientName } = req.body;
+      const { clientName,mobile,email,address } = req.body;
 
       if (!clientName) {
         return res.status(400).json({ status: false, message: 'Client name is required' });
       }
 
+      const checkclient = await ClientModel.getclientbyname(clientName);
+      if (checkclient) {
+        return res.status(409).json({ status: false, message: 'Client name already exists' });
+      }
+      const checkmobile = await ClientModel.getclientBymobile(mobile);
+      if (checkmobile) {
+        return res.status(409).json({ status: false, message: 'Mobile number already exists' });
+      }
+      const checkemail = await ClientModel.getclientByemail(email);
+      if (checkemail) {
+        return res.status(409).json({ status: false, message: 'Email already exists' });
+      }
+
       const id = uuidv4();
-      await ClientModel.createClient(id, clientName);
+      await ClientModel.createClient(id, clientName, mobile, email, address);
 
       res.status(201).json({
         status: true,
         message: 'Client created successfully',
-        data: { id, clientName },
+        data: { id, clientName,mobile,email,address },
       });
     } catch (error) {
       res.status(500).json({ status: false, message: 'Failed to create client', error: error.message });
@@ -50,7 +63,7 @@ const ClientController = {
   updateclient: async (req, res) => {
     try {
       const { id } = req.params;
-      const { clientName } = req.body;
+      const { clientName, mobile, email, address } = req.body;
       console.log(id, clientName);
 
       // Check if the client exists
@@ -59,9 +72,13 @@ const ClientController = {
         return res.status(404).json({ status: false, message: 'Client not found' });
       }
 
+
       
       const updatedFields = {};
       if (clientName) updatedFields.clientName = clientName || clientExists.clientName;
+      if (mobile) updatedFields.mobile = mobile || clientExists.mobile;
+      if (email) updatedFields.email = email || clientExists.email;
+      if (address) updatedFields.address = address || clientExists.address;
 
 
 

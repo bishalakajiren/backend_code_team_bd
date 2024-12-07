@@ -11,6 +11,11 @@ const ProjectModel = {
     return rows[0];
   },
 
+  getProjectByname: async (projectName) => {
+    const [rows] = await db.query('SELECT * FROM project WHERE projectName = ?', [projectName]);
+    return rows[0];
+  },
+
   createProject: async (id, projectName, clientId) => {
     await db.query('INSERT INTO project (id, projectName, clientId) VALUES (?, ?, ?)', [id, projectName, clientId]);
   },

@@ -31,6 +31,11 @@ const TaskController = {
       const { taskName, clientId, projectId,  taskAssignTo, tags, status, priority, date } = req.body;
       const id = uuidv4();
 
+      const taskExists = await TaskModel.getTaskbyName(taskName);
+      if (taskExists) {
+        return res.status(409).json({ status: false, message: 'Task name already exists' });
+      }
+
       await TaskModel.createTask(id, taskName, clientId, projectId,  taskAssignTo, tags, status, priority, date);
 
       res.status(201).json({
@@ -57,14 +62,14 @@ const TaskController = {
      
       const updatedFields = {};
   
-      if (taskName) updatedFields.taskName = taskName;
-      if (clientId) updatedFields.clientName = clientName;
-      if (projectId) updatedFields.projectName = projectName;
-      if (taskAssignTo) updatedFields.taskAssignTo = JSON.stringify(taskAssignTo); 
-      if (tags) updatedFields.tags = JSON.stringify(tags); 
-      if (status) updatedFields.status = status;
-      if (priority) updatedFields.priority = priority;
-      if (date) updatedFields.date = date;
+      if (taskName) updatedFields.taskName = taskName || taskExists.taskName;
+      if (clientId) updatedFields.clientName = clientName || taskExists.clientName;
+      if (projectId) updatedFields.projectName = projectName || taskExists.projectName;
+      if (taskAssignTo) updatedFields.taskAssignTo = JSON.stringify(taskAssignTo) || JSON.stringify(taskExists.taskAssignTo) ; 
+      if (tags) updatedFields.tags = JSON.stringify(tags) || JSON.stringify(taskExists.tags); 
+      if (status) updatedFields.status = status || taskExists.status;
+      if (priority) updatedFields.priority = priority || taskExists.priority;
+      if (date) updatedFields.date = date || taskExists.date;
   
 
       if (Object.keys(updatedFields).length === 0) {

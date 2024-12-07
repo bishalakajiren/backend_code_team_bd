@@ -10,6 +10,15 @@ const DeveloperModel = {
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
     return rows[0];
   },
+  getUserByEmail: async (email) => {
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    return rows[0];
+  },
+
+  getUserByUserName: async (userName) => {
+    const [rows] = await db.query('SELECT * FROM users WHERE userName = ?', [userName]);
+    return rows[0];
+  },
 
   createUser: async (userName, email, role) => {
     await db.query('INSERT INTO users (userName, email, role) VALUES (?, ?, ?)', [userName, email, role]);

@@ -33,6 +33,11 @@ const TagController = {
         return res.status(400).json({ status: false, message: 'Tag name is required' });
       }
 
+      const tagExists = await TagModel.getTagByName(tagName);
+      if (tagExists) {
+        return res.status(409).json({ status: false, message: 'Tag name already exists' });
+      }
+
       await TagModel.createTag(tagName);
 
       res.status(201).json({
@@ -58,7 +63,7 @@ const TagController = {
 
     
       const updatedFields = {};
-      if (tagName) updatedFields.tagName = tagName;
+      if (tagName) updatedFields.tagName = tagName || tagExists.tagName;
 
    
       if (Object.keys(updatedFields).length === 0) {

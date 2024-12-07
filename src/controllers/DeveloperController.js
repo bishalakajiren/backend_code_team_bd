@@ -33,6 +33,16 @@ const DeveloperController = {
         return res.status(400).json({ status: false, message: 'User name, email, and role are required' });
       }
 
+      const developerExists = await DeveloperModel.getUserByEmail(email);
+      if (developerExists) {
+        return res.status(409).json({ status: false, message: 'Email already exists' });
+      }
+     
+      const userNameExists = await DeveloperModel.getUserByUserName(userName);
+      if (userNameExists) {
+        return res.status(409).json({ status: false, message: 'User name already exists' });
+      }
+
       await DeveloperModel.createUser(userName, email, role);
 
       res.status(201).json({
@@ -58,9 +68,9 @@ const DeveloperController = {
 
       
       const updatedFields = {};
-      if (userName) updatedFields.userName = userName;
-      if (email) updatedFields.email = email;
-      if (role) updatedFields.role = role;
+      if (userName) updatedFields.userName = userName || developerExists.userName;
+      if (email) updatedFields.email = email || developerExists.email;
+      if (role) updatedFields.role = role || developerExists.role;
 
     
       if (Object.keys(updatedFields).length === 0) {

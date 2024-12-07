@@ -11,9 +11,23 @@ const ClientModel = {
     return rows[0];
   },
 
-  createClient: async (id, clientName) => {
-    await db.query('INSERT INTO client (id, clientName) VALUES (?, ?)', [id, clientName]);
+  createClient: async (id, clientName, email, mobile, address) => {
+    await db.query('INSERT INTO client (id, clientName, email,mobile,address) VALUES (?, ?, ?, ?, ?)', [id, clientName, email, mobile, address]);
   },
+
+  getclientbyname : async (clientName) => {
+    const [rows] = await db.query('SELECT * FROM client WHERE clientName = ?', [clientName]);
+    return rows[0];
+  },
+  getclientBymobile: async (mobile) => {
+    const [rows] = await db.query('SELECT * FROM client WHERE mobile = ?', [mobile]);
+    return rows[0];
+  },
+  getclientByemail: async (email) => {
+    const [rows] = await db.query('SELECT * FROM client WHERE email = ?', [email]);
+    return rows[0];
+  },
+ 
 
 //   updateClient: async (id, clientName) => {
 //     await db.query('UPDATE client SET clientName = ? WHERE id = ?', [clientName, id]);

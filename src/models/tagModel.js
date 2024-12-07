@@ -10,6 +10,10 @@ const TagModel = {
     const [rows] = await db.query('SELECT * FROM tags WHERE id = ?', [id]);
     return rows[0];
   },
+  getTagByName: async (tagName) => {
+    const [rows] = await db.query('SELECT * FROM tags WHERE tagName = ?', [tagName]);
+    return rows[0];
+  },
 
   createTag: async (tagName) => {
     await db.query('INSERT INTO tags (tagName) VALUES (?)', [tagName]);

@@ -34,6 +34,11 @@ const ProjectController = {
         return res.status(400).json({ status: false, message: 'Project name and client ID are required' });
       }
 
+      const checkproject = await ProjectModel.getProjectByname(projectName);
+      if (checkproject) {
+        return res.status(409).json({ status: false, message: 'Project name already exists' });
+      }
+
       const id = uuidv4();
       await ProjectModel.createProject(id, projectName, clientId);
 
@@ -60,8 +65,8 @@ const ProjectController = {
 
       
       const updatedFields = {};
-      if (projectName) updatedFields.projectName = projectName;
-      if (clientId) updatedFields.clientId = clientId;
+      if (projectName) updatedFields.projectName = projectName || projectExists.projectName;
+      if (clientId) updatedFields.clientId = clientId || projectExists.clientId;
 
      
       if (Object.keys(updatedFields).length === 0) {

@@ -63,6 +63,11 @@ WHERE
     return rows[0];
   },
 
+getTaskbyName : async (taskName) => {
+  const [rows] = await db.query('SELECT * FROM tasks WHERE taskName = ?', [taskName]);
+  return rows[0];
+},
+
   createTask: async (id, taskName, clientId, projectId,  taskAssignTo, tags, status, priority, date) => {
     await db.query(`
       INSERT INTO tasks (id, taskName, clientId, projectId,  taskAssignTo, tags, status, priority, date) 

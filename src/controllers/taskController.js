@@ -230,51 +230,77 @@ const TaskController = {
   },
   getAlltask1: async (req, res) => {
     try {
-      const { status, priority } = req.query; // Get filters from query parameters
+        const { status, priority, date } = req.query; // Get filters from query parameters
 
-      // Define valid enums for filtering
-      const validStatuses = ['Running', 'Not Started', 'Paused', 'Completed'];
-      const validPriorities = ['Low', 'Mid', 'High'];
+        // Define valid enums for filtering
+        const validStatuses = ['Running', 'Not Started', 'Paused', 'Completed'];
+        const validPriorities = ['Low', 'Mid', 'High'];
 
-      // Validate query parameters
-      if (status && !validStatuses.includes(status)) {
-        return res.status(400).json({
-          status: false,
-          message: `Invalid status value. Allowed values: ${validStatuses.join(', ')}`,
+        // Validate query parameters
+        if (status && !validStatuses.includes(status)) {
+            return res.status(400).json({
+                status: false,
+                message: `Invalid status value. Allowed values: ${validStatuses.join(', ')}`,
+            });
+        }
+
+        if (priority && !validPriorities.includes(priority)) {
+            return res.status(400).json({
+                status: false,
+                message: `Invalid priority value. Allowed values: ${validPriorities.join(', ')}`,
+            });
+        }
+
+        // Fetch all tasks from the model
+        let tasks = await TaskModel.getAllTasks();
+
+        // Apply filtering dynamically
+        if (status) {
+            tasks = tasks.filter((task) => task.status === status);
+        }
+
+        if (priority) {
+            tasks = tasks.filter((task) => task.priority === priority);
+        }
+
+        if (date) {
+          // Check if the date filter is for today
+          if (date === 'today') {
+              // Get the start and end of today's date
+              const todayStart = new Date();
+              todayStart.setHours(0, 0, 0, 0); // Start of today
+              const todayEnd = new Date();
+              todayEnd.setHours(23, 59, 59, 999); // End of today
+
+              console.log('Filtering by today:', { todayStart, todayEnd }); // Log the start and end of today
+
+              // Filter tasks where the date is within today's range
+              tasks = tasks.filter((task) => {
+                  const taskDate = new Date(task.date); // Convert task.date to Date object
+                  return taskDate >= todayStart && taskDate <= todayEnd; // Check if task's date is within today's range
+              });
+          } else {
+              return res.status(400).json({
+                  status: false,
+                  message: `Invalid date filter. Allowed value: "today"`,
+              });
+          }
+      }
+
+        res.json({
+            status: true,
+            message: 'Tasks fetched successfully',
+            data: tasks,
         });
-      }
-
-      if (priority && !validPriorities.includes(priority)) {
-        return res.status(400).json({
-          status: false,
-          message: `Invalid priority value. Allowed values: ${validPriorities.join(', ')}`,
-        });
-      }
-
-      // Fetch all tasks from the model
-      let tasks = await TaskModel.getAllTasks();
-
-      // Apply filtering dynamically
-      if (status) {
-        tasks = tasks.filter((task) => task.status === status);
-      }
-      if (priority) {
-        tasks = tasks.filter((task) => task.priority === priority);
-      }
-
-      res.json({
-        status: true,
-        message: 'Tasks fetched successfully',
-        data: tasks,
-      });
     } catch (error) {
-      res.status(500).json({
-        status: false,
-        message: 'Failed to fetch tasks',
-        error: error.message,
-      });
+        res.status(500).json({
+            status: false,
+            message: 'Failed to fetch tasks',
+            error: error.message,
+        });
     }
-  },
+},
+
   
   
 };
